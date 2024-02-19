@@ -6,6 +6,7 @@ Small widget to display the data property of a page.
 
 ```html
 <script>
+    import StateSpy from 'state-spy';
     let {
         data  // where data might contain event.locals etc.
     } = $props();
