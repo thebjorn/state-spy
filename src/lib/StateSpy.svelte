@@ -15,19 +15,17 @@
 
 
     // generic value to string
-    const val2str = (val) => {
-        return JSON.stringify(val);
-    }
+    const val2str = val => JSON.stringify(val);
 
     // date to string
-    const date2str = (val) => {
-        return val.toLocaleString();
-    }
+    const date2str = val => val.toLocaleString();
 
     // array to string
     const arr2str = (val) => {
-        return `[${val.map(v => type2str(v, val2type(v))).join(', ')}]`;
+        console.log('arr2str', val, val2type(val));
+        let  res = `[${val.map(v => type2str(v, val2type(v))).join(', ')}]`;
     }
+
 
     // object to string
     const obj2str = (val) => {
