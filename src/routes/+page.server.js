@@ -4,14 +4,28 @@ export const load = event => {
         hello: 'world',
         fortytwo: 42,
         arr: [1, 2, 3],
-        anobj: {
+        long_array: Array(20).fill(0),
+        obj: {
             foo: 'bar',
             baz: 'qux'
         },
         arr_of_obj: [
             {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
+            {foo: 'bar'},
             {baz: 'qux'}
         ],
+        long_string: `lorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor
+         sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit 
+         ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit ametlorem ipsum dolor sit amet`,
     }
-    return {locals: event.locals}
+    return {
+        level1: Array(20).fill(0),
+        locals: event.locals
+    }
 }

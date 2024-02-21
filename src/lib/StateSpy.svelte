@@ -8,11 +8,14 @@
         value_open = true,
         depth = 0,
         child = false,
-        path = ['root'],
         counter = 1
     } = $props();
     // {JSON.stringify(data, null, 2)}
 
+    $effect(() => {
+        // onMount
+        sessionStorage.removeItem('state-spy-width')
+    });
 
     // generic value to string
     const val2str = val => JSON.stringify(val);
@@ -22,54 +25,85 @@
 
     // array to string
     const arr2str = (val) => {
-        console.log('arr2str', val, val2type(val));
+        // console.log('arr2str', val, val2type(val));
         let  res = `[${val.map(v => type2str(v, val2type(v))).join(', ')}]`;
+        return res
     }
-
 
     // object to string
     const obj2str = (val) => {
-        // maxdepth += 1
         return Object.fromEntries(Object.entries(val).map(([k, v]) => stringify(k, v)));
     }
 
     const type2str = (val, typename) => {
         switch (typename) {
-            case 'null':
-                return 'null';
-            case 'undefined':
-                return 'undefined';
-            case 'boolean':
-                return val2str(val);
-            case 'number':
-                return val2str(val);
-            case 'string':
-                return val2str(val);
-            case 'Date':
-                return date2str(val);
-            case 'Array':
-                return arr2str(val);
-            case 'Object':
-                return obj2str(val);
+            case 'null': return 'null';
+            case 'undefined': return 'undefined';
+            case 'boolean': return val2str(val);
+            case 'number': return val2str(val);
+            case 'string': return val2str(val);
+            case 'string-big': return val2str(val);
+            case 'Date': return date2str(val);
+            case 'Array-Small': return JSON.stringify(val, null, 2);
+            case 'Array': return JSON.stringify(val, null, 2);
+            // case 'Array': return arr2str(val);
+            case 'Object': return obj2str(val);
         }
     }
 
     const val2type = (val) => {
         if (val === null) return 'null';
         if (val === undefined) return 'undefined';
-        if (typeof val === 'boolean' || typeof val === 'number' || typeof val === 'string') return typeof val;
+        if (typeof val === 'string') {
+            if (val.length > 30) return 'string-big';
+            return 'string';
+        }
+        if (typeof val === 'boolean' || typeof val === 'number') return typeof val;
         if (val instanceof Date) return 'Date';
-        if (Array.isArray(val)) return 'Array';
+        if (Array.isArray(val)) {
+            if (JSON.stringify(val).length < 30) return 'Array-Small'
+            return 'Array';
+        } 
         if (typeof val === 'object') return 'Object';
     }
 
     function stringify(k, v) {
         const typename = val2type(v);
+        if (typename === 'Array') {
+            console.log('stringify', v.map((val, i) => ['asdf' + i+5, val]));
+            console.log('stringify', Object.fromEntries(v.map((val, i) => ['asdf' + i+5, val])));
+            return stringify(
+                k,
+                // `asdf ${k}`, 
+                // Object.fromEntries(v.map((val, i) => [`xx[${i}]`, val]))
+                Object.fromEntries(v.map((val, i) => ['asdf' + i+5, val]))
+            )
+        }
         const strval = type2str(v, typename);
-        return [k, [strval, typename, [...path, k]]]
+        return [k, [strval, typename]]
     }
 
-    // let strdata = $derived(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, type2str(v)])));
+    function convert_object(obj) {
+        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, convert_item(v)]));
+    }
+
+    function convert_item(item) {
+        if (item === null) return [null, 'null'];
+        if (item === undefined) return [undefined, 'undefined'];
+        if (typeof item === 'string') return [item, item.length > 30 ? 'string-big' : 'string'];
+        if (typeof item === 'boolean' || typeof item === 'number') return [item, typeof item];
+        if (item instanceof Date) return [item, 'Date'];
+
+        
+        if (Array.isArray(item)) return [Object.fromEntries(item.map((v, i) => [i, convert_item(v)])), 'Array'];
+        
+        
+        if (typeof item === 'object') return [convert_object(item), 'Object'];
+    }
+
+    // create the dict we will use to render the data
+    // let strdata = $derived.by(() => convert_item(data)[0]);
+    // console.log("strdata", strdata)
     let strdata = $derived(Object.fromEntries(Object.entries(data).map(([k, v]) => stringify(k, v))));
 
     function toggle_state_spy(e) {
@@ -79,7 +113,7 @@
             root.style.width = 'fit-content';
             root.style.height = 'fit-content';
         } else {
-            const size = '40px';
+            const size = '32px';  // 40 will make it square...
             root.style.width = size;
             root.style.height = size;
         }
@@ -87,26 +121,21 @@
 
     function toggle_section(e) {
         // prevent width of root from changing when collapsing
+        let session_width = sessionStorage.getItem('state-spy-width');
+        if (session_width === null) {
+            session_width = document.querySelector('.state-spy.root').offsetWidth;
+            sessionStorage.setItem('state-spy-width', session_width);
+        } 
         const root = document.querySelector('.state-spy.root');
-        const current_width = root.offsetWidth;
-        root.style.width = current_width + 'px';
+        root.style.width = session_width + 'px';
 
         value_open = !value_open
+    }
 
-        // const item = e.target.closest('.item')
-        // const controls = item.dataset.controls
-        // const open = item.dataset.open === 'true'
-        // item.dataset.open = !open
-        // document.querySelectorAll(`[data-scope^="${controls}"]`).forEach(el => {
-        //     if (open) {
-        //         el.classList.add('closed')
-        //     } else {
-        //         el.classList.remove('closed')
-        //         if (el.dataset?.open === 'false') {
-        //             el.dataset.open = true
-        //         }
-        //     }
-        // })
+    function key_handler(e) {
+        if (e.key === 'Enter') {
+            toggle_section(e);
+        }
     }
 
     const indent = 24;
@@ -135,40 +164,47 @@
 
 {#snippet content()}
 <li class="snippet-content">
-    <div class="item collapsible" data-open={value_open}
+    <div class="item collapsible" onkeyup={key_handler} role="button" tabindex="0" data-open={value_open}
          onclick={toggle_section}>
         {@render key_snippet({depth, name, header: true, collapsible: true})}
         <div class="type">Object</div>
     </div>
-    <ol class="outside-each" class:closed={!value_open}>
+    <ol class="outside-each" class:closed={!value_open} role="group">
         {#if value_open}
-    {#each Object.keys(strdata) as key}
-    
-        {#if strdata[key][1] === 'Object'}
-            <svelte:self 
-                data={data[key]} 
-                subkey 
-                name={key} 
-                value_open={value_open}
-                depth={depth+1} 
-                child={true}
-                path={[...path, key]}
-                counter={counter}
-                />
-        {:else}
-            <li class="inside-each">
-            <!-- the data (when value is a simple type): key, value, type -->
-            <div class="item" data-scope="{path.join('/')}" hidden={!value_open}>
-                {@render key_snippet({depth: depth+1, name: key, header: false, collapsible: false})}
-                <!-- the type is added as a class in case we need special formatting -->
-                <span class="value {strdata[key][1].toLowerCase()}">
-                    {strdata[key][0]} 
-                </span>
-                <span class="type">{strdata[key][1]}</span>
-            </div>
-            </li>
-        {/if}
-    {/each}
+            {#each Object.keys(strdata) as key}
+                {@const val = strdata[key][0]}
+                {@const valtype = strdata[key][1]}
+                <!-- {@debug val}
+                {@debug valtype} -->
+                {@const display_valtype = valtype?.split('-')[0]}
+            
+                {#if strdata[key][1] === 'Object'}
+                    <svelte:self 
+                        data={data[key]} 
+                        subkey 
+                        name={key} 
+                        value_open={value_open}
+                        depth={depth+1} 
+                        child={true}
+                        counter={counter}
+                        />
+                {:else}
+                    <li class="inside-each" role="treeitem" aria-selected="false">
+                        <!-- the data (when value is a simple type): key, value, type -->
+                        <div class="item"  hidden={!value_open}>
+
+                            {@render key_snippet({depth: depth+1, name: key, header: false, collapsible: false})}
+
+                            <!-- the type is added as a class in case we need special formatting -->
+                            <span class="value {valtype.toLowerCase()}" title={val}>
+                                {val} 
+                            </span>
+
+                            <span class="type">{display_valtype} ({valtype})</span>
+                        </div>
+                    </li>
+                {/if}
+            {/each}
         {/if}
     </ol>
 </li>
@@ -203,7 +239,7 @@
         </div>
     </div>    
 
-{:else}
+{:else}  <!-- if child -->
     {#if open }
         {@render content()}
     {/if}
@@ -225,6 +261,7 @@
         font-size: 14px;
         line-height: 1.4;
         font-weight: normal;
+        box-sizing: border-box;
         
         overflow: auto;
         /* resize: both; */
@@ -234,6 +271,7 @@
         right: 1rem;
         z-index: 1000;
         max-height: 80vh;
+        max-width: 40vw;
         
         padding: 30px 10px 10px;
         
@@ -316,33 +354,7 @@
             color: white;
         }
     }
-    pre {margin-top: 2rem;}
-    h3 {
-        --size: 16px;
-        font-size: 1em;
-        margin-bottom: 0;
-        text-indent: calc(-1 * var(--indent));
-        font-weight: 600;
-        margin-left: -9px;
 
-        &:before {
-            content: '';
-            border: 5px solid transparent;
-            vertical-align: middle;
-            border-top-color: #666;
-            display: inline-block;
-            transform: translateX(-4px) translateY(2px);
-            transition: transform 0.159s;
-            cursor: pointer;
-        }
-    }
-
-    h3.collapsed:before {
-        content: '';
-        transform: rotate(-90deg) ;
-        /* border-color: transparent;
-        border-top-color: #666; */
-    }
     [data-depth="0"] > .content > h3 {
         text-indent: 0;
     }
@@ -366,12 +378,21 @@
         user-select: none;
     }
 
+    li:has(:focus-visible) {
+        outline: none;
+        background-color: blue;
+    }
+
     .item {
-        
 
         align-items: baseline;
         border-bottom: 1px dotted #ddd;
         background-color: aliceblue;
+
+        &:focus-visible {
+            outline: none;
+            background-color: #f0f0f0;
+        }
 
         &:hover {
             background-color: #f0f0f0;
@@ -381,6 +402,11 @@
             font-weight: 500;
             grid-column: key;
             color: #666;
+
+            &:focus-visible {
+                outline: none;
+                background-color: #f0f0f0;
+            }
         }
 
 
@@ -396,6 +422,9 @@
             font-family: monospace;
             color: rgb(51, 51, 233);
             font-size: 0.9em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
         .value.string, .value.array {
             hanging-punctuation: first last;
