@@ -3,88 +3,47 @@
     let {
         data,
         name = 'data',
-        subkey = false,
-        open = true,
-        value_open = true,
+        type = 'Object',
+        open = true,        // is the StateSpy widget open
+        value_open = true,  // is the value section open
         depth = 0,
-        child = false,
-        counter = 1
+        child = false
     } = $props();
-    // {JSON.stringify(data, null, 2)}
+
+    // arrays should be initially closed
+    value_open = value_open && type !== 'Array' && type !== 'Object-Small'
 
     $effect(() => {
         // onMount
         sessionStorage.removeItem('state-spy-width')
     });
 
-    // generic value to string
-    const val2str = val => JSON.stringify(val);
-
-    // date to string
-    const date2str = val => val.toLocaleString();
-
-    // array to string
-    const arr2str = (val) => {
-        // console.log('arr2str', val, val2type(val));
-        let  res = `[${val.map(v => type2str(v, val2type(v))).join(', ')}]`;
-        return res
-    }
-
-    // object to string
-    const obj2str = (val) => {
-        return Object.fromEntries(Object.entries(val).map(([k, v]) => stringify(k, v)));
-    }
-
-    const type2str = (val, typename) => {
-        switch (typename) {
-            case 'null': return 'null';
-            case 'undefined': return 'undefined';
-            case 'boolean': return val2str(val);
-            case 'number': return val2str(val);
-            case 'string': return val2str(val);
-            case 'string-big': return val2str(val);
-            case 'Date': return date2str(val);
-            case 'Array-Small': return JSON.stringify(val, null, 2);
-            case 'Array': return JSON.stringify(val, null, 2);
-            // case 'Array': return arr2str(val);
-            case 'Object': return obj2str(val);
-        }
-    }
-
-    const val2type = (val) => {
-        if (val === null) return 'null';
-        if (val === undefined) return 'undefined';
-        if (typeof val === 'string') {
-            if (val.length > 30) return 'string-big';
-            return 'string';
-        }
-        if (typeof val === 'boolean' || typeof val === 'number') return typeof val;
-        if (val instanceof Date) return 'Date';
-        if (Array.isArray(val)) {
-            if (JSON.stringify(val).length < 30) return 'Array-Small'
-            return 'Array';
-        } 
-        if (typeof val === 'object') return 'Object';
-    }
-
-    function stringify(k, v) {
-        const typename = val2type(v);
-        if (typename === 'Array') {
-            console.log('stringify', v.map((val, i) => ['asdf' + i+5, val]));
-            console.log('stringify', Object.fromEntries(v.map((val, i) => ['asdf' + i+5, val])));
-            return stringify(
-                k,
-                // `asdf ${k}`, 
-                // Object.fromEntries(v.map((val, i) => [`xx[${i}]`, val]))
-                Object.fromEntries(v.map((val, i) => ['asdf' + i+5, val]))
-            )
-        }
-        const strval = type2str(v, typename);
-        return [k, [strval, typename]]
-    }
+    const is_object = item => item !== null && typeof item === 'object' && !Array.isArray(item);
 
     function convert_object(obj) {
-        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, convert_item(v)]));
+        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, convert_value(v)]));
+    }
+
+    // We only need/want to convert one level of values, the svelte:self call will take
+    // care of the recursive case.
+    function convert_value(item) {
+        if (item === null) return [null, 'null'];
+        if (item === undefined) return [undefined, 'undefined'];
+        if (typeof item === 'string') return [item, item.length > 30 ? 'string-big' : 'string'];
+        if (typeof item === 'boolean' || typeof item === 'number') return [item, typeof item];
+        if (item instanceof Date) return [item, 'Date'];
+        if (Array.isArray(item)) {
+            if (item.length === 0) return [item, 'Array-Empty'];
+            if (item.length <= 3) return [item, 'Array-Small'];
+            if (is_object(item[0])) return [item, 'Array-Object'];
+            return [item, 'Array'];
+        }
+        if (typeof item === 'object') {
+            const size = Object.keys(item).length;
+            if (size === 0) return [item, 'Object-Empty'];
+            if (size === 1 && JSON.stringify(item).length < 20) return [item, 'Object-Small'];
+            return [item, 'Object'];
+        }
     }
 
     function convert_item(item) {
@@ -93,18 +52,12 @@
         if (typeof item === 'string') return [item, item.length > 30 ? 'string-big' : 'string'];
         if (typeof item === 'boolean' || typeof item === 'number') return [item, typeof item];
         if (item instanceof Date) return [item, 'Date'];
-
-        
-        if (Array.isArray(item)) return [Object.fromEntries(item.map((v, i) => [i, convert_item(v)])), 'Array'];
-        
-        
+        if (Array.isArray(item)) return [Object.fromEntries(item.map((v, i) => [i, convert_value(v)])), 'Array'];
         if (typeof item === 'object') return [convert_object(item), 'Object'];
     }
 
     // create the dict we will use to render the data
-    // let strdata = $derived.by(() => convert_item(data)[0]);
-    // console.log("strdata", strdata)
-    let strdata = $derived(Object.fromEntries(Object.entries(data).map(([k, v]) => stringify(k, v))));
+    let strdata = $derived.by(() => convert_item(data)[0]);
 
     function toggle_state_spy(e) {
         open = !open
@@ -161,32 +114,31 @@
 {/snippet}
 
 
-
 {#snippet content()}
 <li class="snippet-content">
     <div class="item collapsible" onkeyup={key_handler} role="button" tabindex="0" data-open={value_open}
          onclick={toggle_section}>
         {@render key_snippet({depth, name, header: true, collapsible: true})}
-        <div class="type">Object</div>
+        {#if !value_open}
+            <span class="value">{JSON.stringify(data)}</span>
+        {/if}
+        <div class="type">{type?.split('-')[0]}</div>
     </div>
     <ol class="outside-each" class:closed={!value_open} role="group">
         {#if value_open}
             {#each Object.keys(strdata) as key}
                 {@const val = strdata[key][0]}
                 {@const valtype = strdata[key][1]}
-                <!-- {@debug val}
-                {@debug valtype} -->
                 {@const display_valtype = valtype?.split('-')[0]}
             
-                {#if strdata[key][1] === 'Object'}
+                {#if ['Object', 'Array', 'Array-Object', 'Object-Small'].includes(valtype)}
                     <svelte:self 
-                        data={data[key]} 
-                        subkey 
+                        data={val} 
+                        type={valtype}
                         name={key} 
                         value_open={value_open}
                         depth={depth+1} 
                         child={true}
-                        counter={counter}
                         />
                 {:else}
                     <li class="inside-each" role="treeitem" aria-selected="false">
@@ -197,10 +149,20 @@
 
                             <!-- the type is added as a class in case we need special formatting -->
                             <span class="value {valtype.toLowerCase()}" title={val}>
-                                {val} 
+                                {#if valtype === 'Array-Empty'}
+                                    <span class="empty array">[]</span>
+                                {:else if valtype === 'Object-Empty'}
+                                    <span class="empty obj">{"{}"}</span>
+                                {:else if valtype === 'Array-Small'}
+                                    [{val}]
+                                {:else if valtype === 'Object-Small'}
+                                    {JSON.stringify(val)}
+                                {:else}
+                                    {val} 
+                                {/if}
                             </span>
 
-                            <span class="type">{display_valtype} ({valtype})</span>
+                            <span class="type">{display_valtype}</span>
                         </div>
                     </li>
                 {/if}
@@ -213,8 +175,8 @@
 {#if !child}
 
     <div class="state-spy" 
-        class:root={!subkey} 
-        class:subkey data-depth={depth} 
+        class:root={true} 
+        data-depth={depth} 
         class:closed={!open}>
 
         <!-- toggle button -->
@@ -251,10 +213,7 @@
     .state-spy {
         --indent: 1.5rem;  /* the tree indentation */
         --background-color: #fefefe;
-        /* --background-color: #dba3a3; */
         --border-color: #999;
-
-        /* --debug: 4px dashed rgb(155, 155, 4); */
 
         /* reset */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -293,20 +252,13 @@
         gap: 1px 20px;
     }
 
-    .subkey {
-        padding-left: var(--indent);
-    }
-
     ol {
         list-style: none;
         padding: 0;
         margin: 0;
     }
-
  
     .root.closed {
-        /* width: 1.5rem;
-        height: 1.5rem; */
         resize: none;
     }
 
@@ -355,14 +307,6 @@
         }
     }
 
-    [data-depth="0"] > .content > h3 {
-        text-indent: 0;
-    }
-
-    .closed > .content > h3:before {
-        content: '◢';
-    }
-
     .item, ol, li {
         display: grid;
         grid-template-columns: subgrid;
@@ -409,11 +353,11 @@
             }
         }
 
-
         .object {
-            grid-column: key-start / value-end;
+            grid-column: key-start / key-end;
             font-weight: bold;
             color: #000;
+            white-space: nowrap;
         }
         
         .value {
@@ -440,12 +384,6 @@
 
     .item.closed {
         display: none;
-    }
-
-    .object {
-        grid-column: key-start / value-end;
-        font-weight: bold;
-        color: #000;
     }
 
 </style>
