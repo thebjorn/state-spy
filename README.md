@@ -14,15 +14,19 @@ Small widget to display the data property of a page.
 <StateSpy data />
 ```
 
+![example screenshot](image.png)
+
 You can toss in other data as well:
 
 ```html
 <StateSpy data={[data, {my: "dict"}]}>
 ```
 
-## packaging:
+---
+packaging:
     
 ```bash
+npm version patch
 npx svelte-package
 npm publish
 ```

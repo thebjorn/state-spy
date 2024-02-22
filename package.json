@@ -1,5 +1,11 @@
 {
 	"name": "state-spy",
+	"keywords": ["svelte5", "svelte-kit", "debugging"],
+	"description": "A small debug widget to display contents of the data prop.",
+	"author": "Bjorn Pettersen <bp@datakortet.no>",
+	"license": "MIT",
+	"repository": "https://github.com/thebjorn/state-spy.git",
+	"homepage": "https://github.com/thebjorn/state-spy",
 	"version": "1.0.3",
 	"scripts": {
 		"dev": "vite dev",
