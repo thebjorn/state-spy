@@ -99,11 +99,11 @@
     <span class="key" class:object={header} style="padding-left:{(collapsible ? -7 : 7) + depth*indent}px">
         {#if collapsible}
         {#if !value_open}
-            <svg class="collapsed-close-icon" style="margin-right:-5px;width:16px; height:16px;vertical-align:-2px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="icon collapsed-close-icon" style="margin-right:-5px;width:16px; height:16px;vertical-align:-2px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10 16 4-4-4-4"/>
             </svg>
         {:else}
-            <svg class="collapsed-open-icon" style="margin-right:-5px;width:16px; height:16px;vertical-align:-2px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="icon collapsed-open-icon" style="margin-right:-5px;width:16px; height:16px;vertical-align:-2px" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 10 4 4 4-4"/>
             </svg>
             {/if}
@@ -387,6 +387,10 @@
             font-size: 0.8em;
             font-style: italic;
         }
+    }
+
+    svg.icon {
+        display: inline;
     }
 
     .item.closed {
