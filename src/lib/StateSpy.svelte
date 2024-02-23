@@ -176,7 +176,7 @@
 
     <div class="state-spy" 
         class:root={true} 
-        data-depth={depth} 
+        data-depth={depth} data-bjorn="me"
         class:closed={!open}>
 
         <!-- toggle button -->
@@ -217,7 +217,7 @@
 
         /* reset */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        font-size: 14px;
+        font-size: 14px !important;
         line-height: 1.4;
         font-weight: normal;
         box-sizing: border-box;
@@ -238,8 +238,11 @@
         border-radius: 5px;
         
         transition: background-color 0.2s;
-        background-color: var(--background-color);
-
+        /* background-color: var(--background-color); */
+        background-color: red;
+    }
+    .state-spy * {
+        font-size: 14px !important;
     }
 
     .state-spy-content {
@@ -312,6 +315,7 @@
         grid-template-columns: subgrid;
         grid-column: key-start / type-end;
     }
+    li { padding: 0; }
 
     ol.closed > li {
         display: none;
@@ -346,6 +350,10 @@
             font-weight: 500;
             grid-column: key;
             color: #666;
+
+            &>svg {
+                display: inline;
+            }
 
             &:focus-visible {
                 outline: none;
