@@ -181,7 +181,7 @@
 
         <!-- toggle button -->
         {#if depth === 0}
-            <button on:click={toggle_state_spy}>
+            <button on:click={toggle_state_spy} aria-label="toggle state spy">
                 <svg class="eye-icon" hidden={!open} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-width="1.6" d="M21 12c0 1.2-4 6-9 6s-9-4.8-9-6c0-1.2 4-6 9-6s9 4.8 9 6Z"/>
                     <path stroke="currentColor" stroke-width="1.6" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
