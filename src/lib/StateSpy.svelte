@@ -176,7 +176,7 @@
 
     <div class="state-spy" 
         class:root={true} 
-        data-depth={depth}
+        data-depth={depth} data-me="bjorn"
         class:closed={!open}>
 
         <!-- toggle button -->
@@ -239,6 +239,7 @@
         
         transition: background-color 0.2s;
         background-color: var(--background-color);
+        /* background-color: red; */
     }
     .state-spy * {
         font-size: 14px !important;
@@ -391,6 +392,10 @@
 
     svg.icon {
         display: inline;
+    }
+
+    span.key.object {
+        font-weight: 500;
     }
 
     .item.closed {
