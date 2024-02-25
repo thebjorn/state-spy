@@ -10,7 +10,7 @@
 	"license": "MIT",
 	"repository": "https://github.com/thebjorn/state-spy.git",
 	"homepage": "https://github.com/thebjorn/state-spy",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
