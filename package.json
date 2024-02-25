@@ -10,7 +10,7 @@
 	"license": "MIT",
 	"repository": "https://github.com/thebjorn/state-spy.git",
 	"homepage": "https://github.com/thebjorn/state-spy",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -42,7 +42,6 @@
 		"@sveltejs/package": "^2.2.7",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",
 		"publint": "^0.2.7",
-		
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3",
 		"vite": "^5.1.4"
