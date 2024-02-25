@@ -22,6 +22,16 @@ You can toss in other data as well:
 <StateSpy data={[data, {my: "dict"}]}>
 ```
 
+Maxium width and positioning can be set with:
+    
+```html
+<StateSpy 
+    --maxwidth="60vw"
+    position="bottom-right"
+    data={data} />
+```
+
+
 ---
 **packaging:**
     
