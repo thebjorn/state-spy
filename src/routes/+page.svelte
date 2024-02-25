@@ -1,5 +1,5 @@
 <script>
-    import StateSpy from '$lib/StateSpy.svelte';
+    import StateSpy from '$lib/state-spy.svelte';
     let {data} = $props();
 </script>
 
