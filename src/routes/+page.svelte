@@ -3,7 +3,10 @@
     let {data} = $props();
 </script>
 
-<StateSpy data={data} />
+<StateSpy 
+    --maxwidth="60vw"
+    position="bottom-right"
+    data={data} />
 
 <h1>Welcome to your library project</h1>
 <p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>

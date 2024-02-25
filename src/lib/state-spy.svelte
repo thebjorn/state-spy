@@ -1,7 +1,7 @@
-<svelte:options customElement="state-spy" />
 <script>
     import { scale, slide, fade } from "svelte/transition";
     let {
+        position = 'top-right',
         data,
         name = 'data',
         type = 'Object',
@@ -10,6 +10,19 @@
         depth = 0,
         child = false
     } = $props();
+
+    const pos = {top: null, left: null, bottom: null, right: null};
+    const pos_map = {
+        'top-left': {top: '10px', left: '10px'},
+        'top-right': {top: '10px', right: '10px'},
+        'bottom-left': {bottom: '10px', left: '10px'},
+        'bottom-right': {bottom: '10px', right: '10px'}
+    }
+    Object.assign(pos, pos_map[position]);
+
+    const get_position = (pos) => {
+        return Object.entries(pos).map(([k, v]) => `${k}:${v}`).join(';');
+    }
 
     // arrays should be initially closed
     value_open = value_open && type !== 'Array' && type !== 'Object-Small'
@@ -176,10 +189,11 @@
 {#if !child}
 
     <div class="state-spy" 
+        style={get_position(pos)}
         class:root={true} 
-        data-depth={depth} data-me="bjorn"
+        data-depth={depth} 
         class:closed={!open}>
-
+        
         <!-- toggle button -->
         {#if depth === 0}
             <button on:click={toggle_state_spy} aria-label="toggle state spy">
@@ -201,7 +215,6 @@
             </ol>
         </div>
     </div>    
-
 {:else}  <!-- if child -->
     {#if open }
         {@render content()}
@@ -211,6 +224,21 @@
 
 
 <style lang="postcss">
+
+    /* reset */
+    * {
+        padding: 0;
+        border-width: 0;
+        border: none;
+        border-radius: 0;
+        margin: 0;
+        text-align: left;
+        list-style-type: none;
+        box-shadow: none;
+        outline: none;
+    }
+
+
     .state-spy {
         --indent: 1.5rem;  /* the tree indentation */
         --background-color: #fefefe;
@@ -229,11 +257,10 @@
         /* resize: both; */
         width: fit-content;
         position: fixed;
-        top: 1rem;
-        right: 1rem;
+
         z-index: 1000;
         max-height: 80vh;
-        max-width: 40vw;
+        max-width: var(--maxwidth, 80vw);
         
         padding: 30px 10px 10px;
         
@@ -243,6 +270,7 @@
         transition: background-color 0.2s;
         background-color: var(--background-color);
         /* background-color: red; */
+
 
     }
     .state-spy * {
@@ -314,7 +342,7 @@
         }
     }
 
-    .item, ol, li {
+    .item, ol, ol[role="group"], li {
         display: grid;
         grid-template-columns: subgrid;
         grid-column: key-start / type-end;
@@ -337,6 +365,7 @@
 
     .item {
 
+        
         align-items: baseline;
         border-bottom: 1px dotted #ddd;
         background-color: aliceblue;
@@ -397,7 +426,7 @@
     }
 
     span.key.object {
-        font-weight: 600;
+        font-weight: 800;
     }
 
     .item.closed {
