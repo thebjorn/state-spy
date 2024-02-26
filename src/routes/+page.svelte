@@ -5,7 +5,7 @@
 
 <StateSpy 
     --maxwidth="60vw"
-    position="bottom-right"
+    position="top-right"
     data={data} />
 
 <h1>Welcome to your library project</h1>

@@ -14,6 +14,8 @@ Small widget to display the data property of a page.
 <StateSpy data />
 ```
 
+Small objects are initially collapsed, and all collapsed items display their JSON representation:
+
 ![example screenshot](image.png)
 
 You can toss in other data as well:
@@ -30,6 +32,27 @@ Maxium width and positioning can be set with:
     position="bottom-right"
     data={data} />
 ```
+
+You can set the number of levels to expand with `show` - yes, I'm aware that it can't count correctly :):
+
+```html
+
+<StateSpy 
+    show={2}
+    data={data} />
+```
+
+![alt text](image-1.png)
+
+Right-clicking on a collapsible will collapse all of its children, i.e. from:
+
+![alt text](image-2.png)
+
+to
+
+![alt text](image-3.png)
+
+(if you right-click enough times, twice, it will also open the children - this is a bug).
 
 
 ---

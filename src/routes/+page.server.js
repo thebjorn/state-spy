@@ -5,6 +5,7 @@ export const load = event => {
         fortytwo: 42,
         xyzzy: {a: 1},
         arr: [1, 2, 3],
+        points: [{"x":0,"y":1},{"x":0,"y":0.9},{"x":0.9,"y":0.4},{"x":0.9,"y":0.5},{"x":0.3,"y":1}],
         long_array: Array(20).fill(0).map((_, i) => i**i),
         obj: {
             foo: 'bar',

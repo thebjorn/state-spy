@@ -7,6 +7,7 @@
         type = 'Object',
         open = true,        // is the StateSpy widget open
         value_open = true,  // is the value section open
+        show = 999,
         depth = 0,
         child = false
     } = $props();
@@ -55,7 +56,7 @@
         if (typeof item === 'object') {
             const size = Object.keys(item).length;
             if (size === 0) return [item, 'Object-Empty'];
-            if (size === 1 && JSON.stringify(item).length < 20) return [item, 'Object-Small'];
+            if (JSON.stringify(item).length < 30) return [item, 'Object-Small'];
             return [item, 'Object'];
         }
     }
@@ -99,6 +100,24 @@
         value_open = !value_open
     }
 
+    function toggle_subsections(e) {
+        e.preventDefault();
+        console.log("show:", show, "value_open:", value_open)
+        show = show > 0 ? 0 : 999;
+        // if (show === 0) {
+        //     show = 1000;  // is closed, should open
+        // } else if (show >= 1000) {
+        //     show = 0;
+        // } else if (show > 500) {
+        //     // maybe initially closed, now should open
+        //     show = 1000
+        // } else {
+        //     show = 5
+        // }
+        // console.log('show;after:', show, 'value_open:', value_open)
+        // show = show > 0 && show < 500 ? 0 : 999;
+    }
+
     function key_handler(e) {
         if (e.key === 'Enter') {
             toggle_section(e);
@@ -131,7 +150,7 @@
 {#snippet content()}
 <li class="snippet-content">
     <div class="item collapsible" onkeyup={key_handler} role="button" tabindex="0" data-open={value_open}
-         onclick={toggle_section}>
+         onclick={toggle_section} oncontextmenu={toggle_subsections}>
         {@render key_snippet({depth, name, header: true, collapsible: true})}
         {#if !value_open}
             <span class="value">{JSON.stringify(data)}</span>
@@ -150,7 +169,8 @@
                         data={val} 
                         type={valtype}
                         name={key} 
-                        value_open={value_open}
+                        value_open={value_open && show > 0}
+                        show={show - 1}
                         depth={depth+1} 
                         child={true}
                         />
