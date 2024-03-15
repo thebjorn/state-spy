@@ -1,13 +1,27 @@
 {
 	"name": "state-spy",
-	"version": "1.0.3",
+	"keywords": [
+		"svelte5",
+		"svelte-kit",
+		"debugging"
+	],
+	"description": "A small debug widget to display contents of the data prop.",
+	"author": "Bjorn Pettersen <bp@datakortet.no>",
+	"license": "MIT",
+	"repository": "https://github.com/thebjorn/state-spy.git",
+	"homepage": "https://github.com/thebjorn/state-spy",
+	"version": "1.0.12",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
 		"preview": "vite preview",
-		"package": "svelte-kit sync && svelte-package && publint",
+		"package": "rm -rf dist && svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package"
 	},
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"type": "module",
+	"was-main": "./dist/index.js",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -19,21 +33,17 @@
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
 	],
-	"peerDependencies": {
-		"svelte": "^5.0.0-next.60"
+	"dependencies": {
+		"svelte": "5.0.0-next.79"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.1.1",
-		"@sveltejs/kit": "^2.5.4",
+		"@sveltejs/kit": "^2.5.4", 
 		"@sveltejs/package": "^2.3.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",
 		"publint": "^0.2.7",
-		"svelte": "^5.0.0-next.79",
 		"tslib": "^2.6.2",
 		"typescript": "^5.4.2",
 		"vite": "^5.1.6"
-	},
-	"svelte": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"type": "module"
+	}
 }

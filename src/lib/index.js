@@ -1,4 +1,4 @@
 // Reexport your entry components here
-import StateSpy from './StateSpy.svelte';
+import StateSpy from './state-spy.svelte';
 
-export {StateSpy};
+export default StateSpy;
