@@ -1,49 +1,51 @@
 {
-	"name": "state-spy",
-	"keywords": [
-		"svelte5",
-		"svelte-kit",
-		"debugging"
-	],
-	"description": "A small debug widget to display contents of the data prop.",
-	"author": "Bjorn Pettersen <bp@datakortet.no>",
-	"license": "MIT",
-	"repository": "https://github.com/thebjorn/state-spy.git",
-	"homepage": "https://github.com/thebjorn/state-spy",
-	"version": "1.0.12",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build && npm run package",
-		"preview": "vite preview",
-		"package": "rm -rf dist && svelte-kit sync && svelte-package && publint",
-		"prepublishOnly": "npm run package"
-	},
-	"svelte": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"type": "module",
-	"was-main": "./dist/index.js",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
-		}
-	},
-	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
-	],
-	"dependencies": {
-		"svelte": "5.0.0-next.68"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.1.1",
-		"@sveltejs/kit": "^2.5.1",
-		"@sveltejs/package": "^2.2.7",
-		"@sveltejs/vite-plugin-svelte": "^3.0.2",
-		"publint": "^0.2.7",
-		"tslib": "^2.6.2",
-		"typescript": "^5.3.3",
-		"vite": "^5.1.4"
-	}
+  "name": "state-spy",
+  "keywords": [
+    "svelte5",
+    "svelte-kit",
+    "debugging"
+  ],
+  "description": "A small debug widget to display contents of the data prop.",
+  "author": "Bjorn Pettersen <bp@datakortet.no>",
+  "license": "MIT",
+  "repository": "https://github.com/thebjorn/state-spy.git",
+  "homepage": "https://github.com/thebjorn/state-spy",
+  "version": "1.0.12",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && npm run package",
+    "preview": "vite preview",
+    "package": "rm -rf dist && svelte-kit sync && svelte-package && publint",
+    "prepublishOnly": "npm run package"
+  },
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "was-main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.spec.*"
+  ],
+  "dependencies": {
+    "svelte": "5.0.0-next.68"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@sveltejs/adapter-auto": "^3.1.1",
+    "@sveltejs/kit": "^2.5.1",
+    "@sveltejs/package": "^2.2.7",
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "@types/node": "^20.11.28",
+    "publint": "^0.2.7",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4"
+  }
 }
