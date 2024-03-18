@@ -11,6 +11,7 @@
         depth = 0,
         child = false
     } = $props();
+    // console.log("DATA:", JSON.stringify(data, null, 4))
 
     const pos = {top: null, left: null, bottom: null, right: null};
     const pos_map = {
@@ -69,6 +70,7 @@
         if (item instanceof Date) return [item, 'Date'];
         if (Array.isArray(item)) return [Object.fromEntries(item.map((v, i) => [i, convert_value(v)])), 'Array'];
         if (typeof item === 'object') return [convert_object(item), 'Object'];
+        console.error('Unknown type:', item);
     }
 
     // create the dict we will use to render the data
@@ -159,48 +161,52 @@
     </div>
     <ol class="outside-each" class:closed={!value_open} role="group">
         {#if value_open}
-            {#each Object.keys(strdata) as key}
-                {@const val = strdata[key][0]}
-                {@const valtype = strdata[key][1]}
-                {@const display_valtype = valtype?.split('-')[0]}
-            
-                {#if ['Object', 'Array', 'Array-Object', 'Object-Small'].includes(valtype)}
-                    <svelte:self 
-                        data={val} 
-                        type={valtype}
-                        name={key} 
-                        value_open={value_open && show > 0}
-                        show={show - 1}
-                        depth={depth+1} 
-                        child={true}
-                        />
-                {:else}
-                    <li class="inside-each" role="treeitem" aria-selected="false">
-                        <!-- the data (when value is a simple type): key, value, type -->
-                        <div class="item"  hidden={!value_open}>
+            {#if strdata === undefined}
+                <b>strdata {strdata} is undefined</b>
+            {:else}
+                {#each Object.keys(strdata) as key}
+                    {@const val = strdata[key][0]}
+                    {@const valtype = strdata[key][1]}
+                    {@const display_valtype = valtype?.split('-')[0]}
+                
+                    {#if ['Object', 'Array', 'Array-Object', 'Object-Small'].includes(valtype)}
+                        <svelte:self 
+                            data={val} 
+                            type={valtype}
+                            name={key} 
+                            value_open={value_open && show > 0}
+                            show={show - 1}
+                            depth={depth+1} 
+                            child={true}
+                            />
+                    {:else}
+                        <li class="inside-each" role="treeitem" aria-selected="false"> -->
+                            <!-- the data (when value is a simple type): key, value, type -->
+                            <div class="item"  hidden={!value_open}>
 
-                            {@render key_snippet({depth: depth+1, name: key, header: false, collapsible: false})}
+                                {@render key_snippet({depth: depth+1, name: key, header: false, collapsible: false})}
 
-                            <!-- the type is added as a class in case we need special formatting -->
-                            <span class="value {valtype.toLowerCase()}" title={val}>
-                                {#if valtype === 'Array-Empty'}
-                                    <span class="empty array">[]</span>
-                                {:else if valtype === 'Object-Empty'}
-                                    <span class="empty obj">{"{}"}</span>
-                                {:else if valtype === 'Array-Small'}
-                                    [{val}]
-                                {:else if valtype === 'Object-Small'}
-                                    {JSON.stringify(val)}
-                                {:else}
-                                    {val} 
-                                {/if}
-                            </span>
+                                <!-- the type is added as a class in case we need special formatting -->
+                                <span class="value {valtype.toLowerCase()}" title={val}>
+                                    {#if valtype === 'Array-Empty'}
+                                        <span class="empty array">[]</span>
+                                    {:else if valtype === 'Object-Empty'}
+                                        <span class="empty obj">{"{}"}</span>
+                                    {:else if valtype === 'Array-Small'}
+                                        [{val}]
+                                    {:else if valtype === 'Object-Small'}
+                                        {JSON.stringify(val)}
+                                    {:else}
+                                        {val} 
+                                    {/if}
+                                </span>
 
-                            <span class="type">{display_valtype}</span>
-                        </div>
-                    </li>
-                {/if}
-            {/each}
+                                <span class="type">{display_valtype}</span>
+                            </div>
+                        </li>
+                    {/if}
+                {/each}
+            {/if}
         {/if}
     </ol>
 </li>
